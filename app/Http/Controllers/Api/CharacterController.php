@@ -97,6 +97,55 @@ class CharacterController extends Controller
         return response()->json(['success' => true, 'character' => $character]);
     }
 
+    public function updateExp(Request $request, int $id)
+    {
+        $character = $request->user()->characters()->findOrFail($id);
+
+        $request->validate([
+            'experience' => 'required|integer|min:0',
+        ]);
+
+        $character->experience = $request->integer('experience');
+
+        while ($character->experience >= $this->calculateExpToNextLevel($character->level)) {
+            $character->experience -= $this->calculateExpToNextLevel($character->level);
+            $character->applyLevelUp();
+        }
+
+        $character->last_played_at = now();
+        $character->save();
+
+        return response()->json(['success' => true, 'character' => $character]);
+    }
+
+    public function updateLevel(Request $request, int $id)
+    {
+        $character = $request->user()->characters()->findOrFail($id);
+
+        $request->validate([
+            'level' => 'required|integer|min:1|max:100',
+        ]);
+
+        $targetLevel = $request->integer('level');
+
+        if ($targetLevel <= $character->level) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Yeni level mevcut levelden büyük olmalıdır.',
+            ], 422);
+        }
+
+        while ($character->level < $targetLevel) {
+            $character->applyLevelUp();
+        }
+
+        $character->experience = 0;
+        $character->last_played_at = now();
+        $character->save();
+
+        return response()->json(['success' => true, 'character' => $character]);
+    }
+
     public function destroy(Request $request, int $id)
     {
         $character = $request->user()->characters()->findOrFail($id);

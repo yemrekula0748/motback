@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CharacterController;
+use App\Http\Controllers\Api\FriendController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -17,5 +18,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/characters', [CharacterController::class, 'store']);
     Route::get('/characters/{id}', [CharacterController::class, 'show']);
     Route::put('/characters/{id}/save', [CharacterController::class, 'save']);
+    Route::put('/characters/{id}/exp', [CharacterController::class, 'updateExp']);
+    Route::put('/characters/{id}/level', [CharacterController::class, 'updateLevel']);
     Route::delete('/characters/{id}', [CharacterController::class, 'destroy']);
+
+    // Friends
+    Route::get('/friends', [FriendController::class, 'index']);
+    Route::get('/friends/requests', [FriendController::class, 'requests']);
+    Route::post('/friends/request', [FriendController::class, 'sendRequest']);
+    Route::put('/friends/{id}/accept', [FriendController::class, 'accept']);
+    Route::delete('/friends/{id}/decline', [FriendController::class, 'decline']);
+    Route::delete('/friends/{id}', [FriendController::class, 'remove']);
 });
