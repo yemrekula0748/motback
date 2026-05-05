@@ -41,6 +41,11 @@ class Character extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function quests()
+    {
+        return $this->hasMany(CharacterQuest::class);
+    }
+
     public static function getStartingStats(string $class): array
     {
         return match ($class) {

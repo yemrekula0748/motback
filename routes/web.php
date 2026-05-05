@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminLoginController;
+use App\Http\Controllers\Admin\QuestAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,4 +20,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/users/{id}', [AdminController::class, 'show'])->name('admin.users.show');
     Route::patch('/users/{id}/ban', [AdminController::class, 'ban'])->name('admin.users.ban');
     Route::patch('/users/{id}/unban', [AdminController::class, 'unban'])->name('admin.users.unban');
+
+    Route::get('/quests', [QuestAdminController::class, 'index'])->name('admin.quests.index');
+    Route::get('/quests/create', [QuestAdminController::class, 'create'])->name('admin.quests.create');
+    Route::post('/quests', [QuestAdminController::class, 'store'])->name('admin.quests.store');
+    Route::get('/quests/{id}/edit', [QuestAdminController::class, 'edit'])->name('admin.quests.edit');
+    Route::put('/quests/{id}', [QuestAdminController::class, 'update'])->name('admin.quests.update');
+    Route::delete('/quests/{id}', [QuestAdminController::class, 'destroy'])->name('admin.quests.destroy');
 });

@@ -41,6 +41,7 @@
         <h1>⚔ motOnline Admin Paneli</h1>
         <div>
             <a href="/admin">Kullanıcılar</a>
+            <a href="/admin/quests">Görevler</a>
             <form method="POST" action="/admin/logout" style="display:inline;">
                 @csrf
                 <button type="submit" style="background:none;border:none;color:#e0e0e0;cursor:pointer;font-size:1rem;margin-left:20px;">Çıkış</button>

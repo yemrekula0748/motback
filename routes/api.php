@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CharacterController;
 use App\Http\Controllers\Api\FriendController;
+use App\Http\Controllers\Api\QuestController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -21,6 +22,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/characters/{id}/exp', [CharacterController::class, 'updateExp']);
     Route::put('/characters/{id}/level', [CharacterController::class, 'updateLevel']);
     Route::delete('/characters/{id}', [CharacterController::class, 'destroy']);
+
+    // Quests
+    Route::get('/characters/{id}/quests', [QuestController::class, 'index']);
+    Route::post('/characters/{id}/quests/{questId}/start', [QuestController::class, 'start']);
+    Route::put('/characters/{id}/quests/{questId}/progress', [QuestController::class, 'progress']);
+    Route::put('/characters/{id}/quests/{questId}/complete', [QuestController::class, 'complete']);
 
     // Friends
     Route::get('/friends', [FriendController::class, 'index']);
