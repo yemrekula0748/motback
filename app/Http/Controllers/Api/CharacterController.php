@@ -146,6 +146,17 @@ class CharacterController extends Controller
         return response()->json(['success' => true, 'character' => $character]);
     }
 
+    public function updateProgress(Request $request, $id)
+    {
+        $char = \App\Models\Character::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $char->update($request->only(['level', 'experience', 'current_health', 'current_mana']));
+
+        return response()->json(['success' => true]);
+    }
+
     public function destroy(Request $request, int $id)
     {
         $character = $request->user()->characters()->findOrFail($id);
