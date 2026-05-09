@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/characters/{id}/exp', [CharacterController::class, 'updateExp']);
     Route::put('/characters/{id}/level', [CharacterController::class, 'updateLevel']);
     Route::patch('/characters/{id}', [CharacterController::class, 'updateProgress']);
+    Route::post('/characters/{id}/respec', [CharacterController::class, 'respec']);
     Route::delete('/characters/{id}', [CharacterController::class, 'destroy']);
 
     // Quests
