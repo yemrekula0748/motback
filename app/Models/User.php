@@ -16,6 +16,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'beylik',
         'is_admin',
         'is_banned',
         'ban_reason',

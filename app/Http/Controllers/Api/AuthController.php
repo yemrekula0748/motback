@@ -33,6 +33,7 @@ class AuthController extends Controller
                 'id'       => $user->id,
                 'username' => $user->username,
                 'email'    => $user->email,
+                'beylik'   => $user->beylik,
             ],
         ], 201);
     }
@@ -75,6 +76,7 @@ class AuthController extends Controller
                 'id'       => $user->id,
                 'username' => $user->username,
                 'email'    => $user->email,
+                'beylik'   => $user->beylik,
             ],
         ]);
     }
@@ -97,8 +99,39 @@ class AuthController extends Controller
             'id'            => $user->id,
             'username'      => $user->username,
             'email'         => $user->email,
+            'beylik'        => $user->beylik,
             'is_admin'      => $user->is_admin,
             'last_login_at' => $user->last_login_at,
+        ]);
+    }
+
+    public function chooseBeylik(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->beylik !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Beylik secimi zaten yapilmis, degistirilemez.',
+            ], 409);
+        }
+
+        $request->validate([
+            'beylik' => 'required|in:gokboru,bozkurt',
+        ]);
+
+        $user->beylik = $request->beylik;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Beylik secimi kaydedildi.',
+            'user'    => [
+                'id'       => $user->id,
+                'username' => $user->username,
+                'email'    => $user->email,
+                'beylik'   => $user->beylik,
+            ],
         ]);
     }
 }
