@@ -1,42 +1,38 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CharacterController;
-use App\Http\Controllers\Api\FriendController;
-use App\Http\Controllers\Api\QuestController;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CharacterController;
+use App\Http\Controllers\Api\V1\GameSessionController;
+use App\Http\Controllers\Api\V1\MeController;
+use App\Http\Controllers\Api\V1\RealmController;
+use App\Http\Controllers\Api\V1\ServerCharacterController;
+use App\Http\Controllers\Api\V1\ServerSessionController;
 use Illuminate\Support\Facades\Route;
 
-// Public routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::prefix('v1')->group(function (): void {
+    Route::prefix('auth')->group(function (): void {
+        Route::post('register', [AuthController::class, 'register'])->middleware('throttle:register');
+        Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login');
+    });
 
-// Protected routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
-    Route::post('/profile/beylik', [AuthController::class, 'chooseBeylik']);
+    Route::get('public/realms', [RealmController::class, 'index']);
 
-    Route::get('/characters', [CharacterController::class, 'index']);
-    Route::post('/characters', [CharacterController::class, 'store']);
-    Route::get('/characters/{id}', [CharacterController::class, 'show']);
-    Route::put('/characters/{id}/save', [CharacterController::class, 'save']);
-    Route::put('/characters/{id}/exp', [CharacterController::class, 'updateExp']);
-    Route::put('/characters/{id}/level', [CharacterController::class, 'updateLevel']);
-    Route::patch('/characters/{id}', [CharacterController::class, 'updateProgress']);
-    Route::post('/characters/{id}/respec', [CharacterController::class, 'respec']);
-    Route::delete('/characters/{id}', [CharacterController::class, 'destroy']);
+    Route::middleware('auth:sanctum')->group(function (): void {
+        Route::post('auth/logout', [AuthController::class, 'logout']);
 
-    // Quests
-    Route::get('/characters/{id}/quests', [QuestController::class, 'index']);
-    Route::post('/characters/{id}/quests/{questId}/start', [QuestController::class, 'start']);
-    Route::put('/characters/{id}/quests/{questId}/progress', [QuestController::class, 'progress']);
-    Route::put('/characters/{id}/quests/{questId}/complete', [QuestController::class, 'complete']);
+        Route::get('me', [MeController::class, 'show']);
+        Route::patch('me/faction', [MeController::class, 'updateFaction']);
 
-    // Friends
-    Route::get('/friends', [FriendController::class, 'index']);
-    Route::get('/friends/requests', [FriendController::class, 'requests']);
-    Route::post('/friends/request', [FriendController::class, 'sendRequest']);
-    Route::put('/friends/{id}/accept', [FriendController::class, 'accept']);
-    Route::delete('/friends/{id}/decline', [FriendController::class, 'decline']);
-    Route::delete('/friends/{id}', [FriendController::class, 'remove']);
+        Route::get('characters', [CharacterController::class, 'index']);
+        Route::post('characters', [CharacterController::class, 'store']);
+        Route::get('characters/{character}', [CharacterController::class, 'show']);
+        Route::delete('characters/{character}', [CharacterController::class, 'destroy']);
+
+        Route::post('game/session', [GameSessionController::class, 'store'])->middleware('throttle:game-session');
+    });
+
+    Route::prefix('server')->group(function (): void {
+        Route::post('session/consume', [ServerSessionController::class, 'consume'])->middleware('throttle:server-consume');
+        Route::patch('characters/{character}/progress', [ServerCharacterController::class, 'updateProgress'])->middleware('throttle:server-progress');
+    });
 });

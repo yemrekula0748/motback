@@ -2,26 +2,24 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'name',
         'username',
         'email',
         'password',
-        'beylik',
+        'faction',
         'is_admin',
-        'is_banned',
-        'ban_reason',
-        'last_login_at',
-        'last_login_ip',
     ];
 
     protected $hidden = [
@@ -33,25 +31,24 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'last_login_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
-            'is_banned' => 'boolean',
         ];
     }
 
-    public function characters()
+    public function characters(): HasMany
     {
         return $this->hasMany(Character::class);
     }
 
-    public function sentFriendRequests()
+    public function toApiArray(): array
     {
-        return $this->hasMany(Friendship::class, 'user_id');
-    }
-
-    public function receivedFriendRequests()
-    {
-        return $this->hasMany(Friendship::class, 'friend_id');
+        return [
+            'id' => $this->id,
+            'username' => $this->username,
+            'email' => $this->email,
+            'is_admin' => (bool) $this->is_admin,
+            'faction' => $this->faction,
+        ];
     }
 }
